@@ -1,0 +1,18 @@
+{
+  "productName": "Sauce Labs Backpack",
+  "quantity": 2,
+  "fullName": "Feni Fenio",
+  "address1": "Jl. Merdeka No. 1",
+  "address2": "Block A",
+  "city": "Jakarta",
+  "state": "DKI Jakarta",
+  "zip": "10110",
+  "country": "Indonesia",
+  "cardHolderInput": "Feni",
+  "cardHolderReview": "Feni",
+  "cardNumberInput": "4111111111111111",
+  "cardNumberReview": "4111 1111 1111 1111",
+  "expirationDate": "12/30",
+  "securityCode": "123",
+  "totalAmount": "$ 65.97"
+}
