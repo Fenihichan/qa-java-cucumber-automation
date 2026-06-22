@@ -42,6 +42,8 @@ appium --base-path /wd/hub
 
 - No extra local application is required
 - Internet access is needed to reach the public API used by the tests
+- The API scenarios validate responses against JSON Schemas stored in `src/test/resources/schemas`
+- The current schema coverage includes create, retrieve, and delete post responses
 
 ## Setup
 
@@ -101,4 +103,5 @@ If you prefer, you can also run the runner classes directly from your IDE.
 
 - The web tests inject authentication data from `src/test/resources/config.properties` before running.
 - The mobile tests terminate the app after each scenario.
+- The mobile tests assume the Sauce Labs demo app is already installed on the target device or emulator.
 - The suite runner class names do not match Maven Surefire's default test naming pattern, so the `-Dtest=...` form is the safest way to execute them from the command line.

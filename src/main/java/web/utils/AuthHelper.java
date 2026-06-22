@@ -1,17 +1,31 @@
 package web.utils;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.time.Duration;
 import java.util.Properties;
 
 public class AuthHelper {
 
-    public static void injectToken() throws IOException {
+    public static Properties loadConfig() throws IOException {
         Properties props = new Properties();
-        props.load(AuthHelper.class.getClassLoader()
-                .getResourceAsStream("config.properties"));
+        try (InputStream inputStream = AuthHelper.class.getClassLoader()
+                .getResourceAsStream("config.properties")) {
+            if (inputStream == null) {
+                throw new IOException("config.properties was not found on the classpath");
+            }
+            props.load(inputStream);
+        }
+        return props;
+    }
 
+    public static void injectToken(Properties props) {
         JavascriptExecutor js = (JavascriptExecutor) DriverFactory.getDriver();
 
         // Inject all required auth keys
@@ -27,6 +41,13 @@ public class AuthHelper {
         System.out.println("acexpire : " + js.executeScript("return window.localStorage.getItem('acexpire');"));
         System.out.println("=============");
 
-        DriverFactory.getDriver().navigate().refresh();
+    }
+
+    public static void assertLoggedInLandingPage(Properties props) {
+        WebDriver driver = DriverFactory.getDriver();
+        String expectedText = props.getProperty("home.logged_in_text", "Produk Investasi");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//*[normalize-space()='" + expectedText + "']")));
     }
 }
