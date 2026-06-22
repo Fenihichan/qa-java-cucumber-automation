@@ -27,11 +27,11 @@ Install the following tools before running the tests:
 ### Mobile tests
 
 - Appium Server must be running locally
-- The project connects to `http://127.0.0.1:4723/wd/hub`
-- The Appium server should be started with the `/wd/hub` base path, for example:
+- The project connects to `http://127.0.0.1:4723`
+- The Appium server should be started without the `/wd/hub` base path, for example:
 
 ```bash
-appium --base-path /wd/hub
+appium
 ```
 
 - An Android emulator or device must be available
