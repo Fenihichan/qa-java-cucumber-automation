@@ -52,9 +52,7 @@ jobs:
             appium --log-level debug > appium.log 2>&1 &
 
             echo "Waiting for Appium..."
-            until curl -s http://127.0.0.1:4723/status; do
-              sleep 2
-            done
+            sleep 15
 
             echo "ADB devices:"
             adb devices -l
