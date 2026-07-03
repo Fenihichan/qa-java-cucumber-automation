@@ -8,6 +8,12 @@ jobs:
   web:
     runs-on: ubuntu-latest
 
+    env:
+      AC: ${{ secrets.AC }}
+      ACTOKEN: ${{ secrets.ACTOKEN }}
+      ACEXPIRE: ${{ secrets.ACEXPIRE }}
+      BIBIT_USER_ID: ${{ secrets.BIBIT_USER_ID }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -15,6 +21,14 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+
+      - name: Cache Maven
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-
 
       - name: Run Web Tests
         run: mvn test -Dtest=WebTestRunner
