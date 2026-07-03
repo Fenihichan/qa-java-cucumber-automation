@@ -8,8 +8,7 @@ on:
 jobs:
   mobile:
     runs-on: ubuntu-latest
-
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -39,15 +38,38 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          emulator-options: >
+            -no-window
+            -gpu swiftshader_indirect
+            -noaudio
+            -no-boot-anim
+            -no-snapshot
+            -camera-back none
+            -camera-front none
 
           script: |
+            echo "Waiting for emulator..."
+            adb wait-for-device
+
+            until [[ "$(adb shell getprop sys.boot_completed | tr -d '\r')" == "1" ]]; do
+              echo "Android still booting..."
+              sleep 5
+            done
+
+            echo "Starting Appium..."
             appium --log-level info > appium.log 2>&1 &
 
-            echo "Waiting Appium..."
-            sleep 15
+            echo "Waiting for Appium..."
+            until curl -s http://127.0.0.1:4723/status; do
+              sleep 2
+            done
 
+            echo "Running Tests..."
             mvn clean test -Dtest=MobileTestRunner
+
+      - name: Save Logcat
+        if: always()
+        run: adb logcat -d > logcat.txt
 
       - name: Upload Appium Log
         if: always()
@@ -55,6 +77,13 @@ jobs:
         with:
           name: appium-log
           path: appium.log
+
+      - name: Upload Logcat
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logcat
+          path: logcat.txt
 
       - name: Upload Surefire Reports
         if: always()

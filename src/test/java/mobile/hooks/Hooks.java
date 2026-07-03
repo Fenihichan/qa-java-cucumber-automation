@@ -25,7 +25,13 @@ public class Hooks {
         options.setDeviceName("Android Emulator");
         options.setNoReset(false);
 
-        options.setUiautomator2ServerInstallTimeout(Duration.ofSeconds(120));
+        options.setCapability("androidInstallTimeout", 300000);
+
+        options.setCapability("uiautomator2ServerInstallTimeout", 300000);
+
+        options.setCapability("uiautomator2ServerLaunchTimeout", 180000);
+
+        options.setCapability("adbExecTimeout", 300000);
 
         String udid = System.getProperty("udid");
         if (udid != null && !udid.isBlank()) {
