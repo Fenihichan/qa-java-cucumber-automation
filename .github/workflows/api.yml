@@ -10,12 +10,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
+          cache: maven
+
+      - name: Show project structure
+        run: |
+          echo "===== Current Directory ====="
+          pwd
+
+          echo "===== SRC ====="
+          find src -type f | sort
+
+      - name: Compile Test Resources
+        run: mvn test-compile
+
+      - name: Show Target Test Resources
+        run: |
+          echo "===== TARGET ====="
+          find target/test-classes -type f | sort
 
       - name: Run API Tests
         run: mvn clean test -Dtest=ApiTestRunner
+
+      - name: Upload Surefire Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reportsgi
