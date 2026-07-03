@@ -4,16 +4,23 @@ import io.appium.java_client.AppiumBy;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.List;
 
 public class LoginPage extends BasePage {
+
+    private static final Duration WAIT = Duration.ofSeconds(30);
 
     private static final By MENU_BUTTON = AppiumBy.accessibilityId("View menu");
     private static final By LOGIN_MENU_ITEM = AppiumBy.accessibilityId("Login Menu Item");
@@ -39,8 +46,23 @@ public class LoginPage extends BasePage {
     private static final By LOGIN_BUTTON = AppiumBy.id("com.saucelabs.mydemoapp.android:id/loginBtn");
 
     public void openLoginPage() {
+        try {
+            File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            Files.copy(
+                    src.toPath(),
+                    new File("before-login.png").toPath(),
+                    StandardCopyOption.REPLACE_EXISTING
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(driver.getPageSource());
+
         clickWhenReady(MENU_BUTTON);
+
         pause(500);
+
         clickFirstAvailable(
                 LOGIN_MENU_ITEM,
                 LOGIN_MENU_ITEM_ALT,
@@ -74,56 +96,31 @@ public class LoginPage extends BasePage {
     }
 
     private void clickWhenReady(By locator) {
-        new WebDriverWait(driver, Duration.ofSeconds(10))
+        new WebDriverWait(driver, WAIT)
                 .until(ExpectedConditions.elementToBeClickable(locator))
                 .click();
     }
 
     private void typeWhenReady(By locator, String value) {
-        WebElement element = new WebDriverWait(driver, Duration.ofSeconds(10))
+        WebElement element = new WebDriverWait(driver, WAIT)
                 .until(ExpectedConditions.visibilityOfElementLocated(locator));
         element.clear();
         element.sendKeys(value);
     }
 
-    private void clickFirstAvailable(By first, By second) {
-        if (isVisible(first)) {
-            clickWhenReady(first);
-            return;
-        }
-        if (isVisible(second)) {
-            clickWhenReady(second);
-            return;
-        }
-        throw new NoSuchElementException("Neither locator was found: " + first + " or " + second);
-    }
-
-    private void clickFirstAvailable(By first, By second, By third, By fourth, By fifth) {
-        if (isVisible(first)) {
-            clickWhenReady(first);
-            return;
-        }
-        if (isVisible(second)) {
-            clickWhenReady(second);
-            return;
-        }
-        if (isVisible(third)) {
-            clickWhenReady(third);
-            return;
-        }
-        if (isVisible(fourth)) {
-            clickWhenReady(fourth);
-            return;
-        }
-        if (isVisible(fifth)) {
-            clickWhenReady(fifth);
-            return;
+    private void clickFirstAvailable(By... locators) {
+        for (By locator : locators) {
+            if (isVisible(locator)) {
+                clickWhenReady(locator);
+                return;
+            }
         }
         throw new NoSuchElementException("None of the login menu locators were found");
     }
 
     private boolean isVisible(By locator) {
-        return !driver.findElements(locator).isEmpty() && driver.findElement(locator).isDisplayed();
+        return !driver.findElements(locator).isEmpty()
+                && driver.findElement(locator).isDisplayed();
     }
 
     private void pause(long millis) {

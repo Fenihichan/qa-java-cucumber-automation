@@ -66,10 +66,6 @@ jobs:
             echo "Running Tests..."
             mvn -B clean test -Dtest=MobileTestRunner
 
-      - name: Save Logcat
-        if: always()
-        run: adb logcat -d > logcat.txt
-
       - name: Upload Appium Log
         if: always()
         uses: actions/upload-artifact@v4
@@ -77,12 +73,12 @@ jobs:
           name: appium-log
           path: appium.log
 
-      - name: Upload Logcat
+      - name: Upload Screenshot
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: logcat
-          path: logcat.txt
+          name: before-login
+          path: before-login.png
 
       - name: Upload Surefire Reports
         if: always()
