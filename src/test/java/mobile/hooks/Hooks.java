@@ -21,7 +21,7 @@ public class Hooks {
 
         options.setPlatformName("Android");
         options.setAutomationName("UiAutomator2");
-        options.setDeviceName("Android");
+        options.setDeviceName("Android Emulator");
         options.setNoReset(false);
 
         String udid = System.getProperty("udid");
