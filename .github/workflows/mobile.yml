@@ -38,19 +38,14 @@ jobs:
           api-level: 34
           arch: x86_64
           profile: pixel_6
+          disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-          script: |
-            adb devices
 
+          script: |
             appium --log-level info > appium.log 2>&1 &
 
-            echo "Waiting for Appium..."
-
-            until curl -s http://127.0.0.1:4723/status > /dev/null; do
-              sleep 2
-            done
-
-            echo "Appium is ready!"
+            echo "Waiting Appium..."
+            sleep 15
 
             mvn clean test -Dtest=MobileTestRunner
 
