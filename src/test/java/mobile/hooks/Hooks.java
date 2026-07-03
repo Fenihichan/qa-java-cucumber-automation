@@ -4,6 +4,7 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
+import java.time.Duration;
 
 import java.net.URL;
 import java.nio.file.Paths;
@@ -23,6 +24,8 @@ public class Hooks {
         options.setAutomationName("UiAutomator2");
         options.setDeviceName("Android Emulator");
         options.setNoReset(false);
+
+        options.setUiautomator2ServerInstallTimeout(Duration.ofSeconds(120));
 
         String udid = System.getProperty("udid");
         if (udid != null && !udid.isBlank()) {
