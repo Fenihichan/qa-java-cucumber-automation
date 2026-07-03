@@ -2,11 +2,11 @@ package mobile.hooks;
 
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
-
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 
 import java.net.URL;
+import java.nio.file.Paths;
 
 import mobile.utils.DriverManager;
 
@@ -29,11 +29,18 @@ public class Hooks {
             options.setUdid(udid);
         }
 
-        // APK sudah terinstall
-        options.setAppPackage(APP_PACKAGE);
+        // If APK exists, install it automatically.
+        String apkPath = Paths.get(
+                "apps", "mda-2.2.0-25.apk"
+        ).toAbsolutePath().toString();
 
-        // Tunggu activity apa pun dari aplikasi ini
-        options.setAppWaitActivity("*");
+        if (java.nio.file.Files.exists(Paths.get(apkPath))) {
+            options.setApp(apkPath);
+        } else {
+            // Fallback for local emulator where app is already installed.
+            options.setAppPackage(APP_PACKAGE);
+            options.setAppWaitActivity("*");
+        }
 
         DriverManager.setDriver(new AndroidDriver(
                 new URL("http://127.0.0.1:4723"),
