@@ -48,24 +48,25 @@ jobs:
             -camera-front none
 
           script: |
-            echo "Waiting for emulator..."
-            adb wait-for-device
-
-            until [[ "$(adb shell getprop sys.boot_completed | tr -d '\r')" == "1" ]]; do
-              echo "Android still booting..."
-              sleep 5
-            done
-
             echo "Starting Appium..."
-            appium --log-level info > appium.log 2>&1 &
+            appium --log-level debug > appium.log 2>&1 &
 
             echo "Waiting for Appium..."
             until curl -s http://127.0.0.1:4723/status; do
               sleep 2
             done
 
+            echo "ADB devices:"
+            adb devices -l
+
+            echo "Connected device properties:"
+            adb shell getprop ro.build.version.release || true
+
+            echo "Installed packages:"
+            adb shell pm list packages | head -20 || true
+
             echo "Running Tests..."
-            mvn clean test -Dtest=MobileTestRunner
+            mvn -B clean test -Dtest=MobileTestRunner
 
       - name: Save Logcat
         if: always()
