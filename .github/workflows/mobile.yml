@@ -52,7 +52,7 @@ jobs:
             appium --log-level debug > appium.log 2>&1 &
 
             echo "Waiting for Appium..."
-            sleep 15
+            sleep 20
 
             echo "ADB devices:"
             adb devices -l

@@ -4,12 +4,10 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
-import java.time.Duration;
+import mobile.utils.DriverManager;
 
 import java.net.URL;
 import java.nio.file.Paths;
-
-import mobile.utils.DriverManager;
 
 public class Hooks {
 
@@ -26,19 +24,19 @@ public class Hooks {
         options.setNoReset(false);
 
         options.setCapability("androidInstallTimeout", 300000);
-
         options.setCapability("uiautomator2ServerInstallTimeout", 300000);
-
         options.setCapability("uiautomator2ServerLaunchTimeout", 180000);
-
         options.setCapability("adbExecTimeout", 300000);
+        options.setCapability("appWaitDuration", 120000);
+
+        options.setCapability("ignoreHiddenApiPolicyError", true);
+        options.setCapability("skipDeviceInitialization", true);
 
         String udid = System.getProperty("udid");
         if (udid != null && !udid.isBlank()) {
             options.setUdid(udid);
         }
 
-        // If APK exists, install it automatically.
         String apkPath = Paths.get(
                 "apps", "mda-2.2.0-25.apk"
         ).toAbsolutePath().toString();
@@ -46,15 +44,29 @@ public class Hooks {
         if (java.nio.file.Files.exists(Paths.get(apkPath))) {
             options.setApp(apkPath);
         } else {
-            // Fallback for local emulator where app is already installed.
             options.setAppPackage(APP_PACKAGE);
-            options.setAppWaitActivity("*");
         }
+
+        // Apply for both local and GitHub Actions
+        options.setAppWaitActivity("*");
 
         DriverManager.setDriver(new AndroidDriver(
                 new URL("http://127.0.0.1:4723"),
                 options
         ));
+
+        AndroidDriver driver = (AndroidDriver) DriverManager.getDriver();
+
+        System.out.println("====================================");
+        System.out.println("Current package : " + driver.getCurrentPackage());
+        System.out.println("Current activity: " + driver.currentActivity());
+        System.out.println("====================================");
+
+        try {
+            System.out.println(driver.getPageSource());
+        } catch (Exception e) {
+            System.out.println("Unable to get page source: " + e.getMessage());
+        }
     }
 
     @After
